@@ -6,3 +6,4 @@ jupyter
 matplotlib
 torch
 torchvision
+openai-clip

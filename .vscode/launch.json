@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: DeepDream",
+            "type": "python",
+            "request": "launch",
+            "program": "deepdream.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--fps", "30",
+                "--input", "video.mp4",
+                "--blend", "0.5",
+                "--num_gradient_ascent_iterations", "10",
+                "--create_from_noise", "True",
+                "--text_prompt", "Most Significant Scientific Discoveries"
+            ]
+        }
+    ]
+}

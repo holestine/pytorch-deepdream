@@ -2,7 +2,7 @@ import os
 import subprocess
 import shutil
 import re
-
+import glob
 
 import cv2 as cv
 import imageio
@@ -35,30 +35,16 @@ def create_video_name(config):
 
 
 def create_video_from_intermediate_results(config):
-    # save_and_maybe_display_image uses this same format (it's hardcoded there), not adaptive but does the job
-    img_pattern = os.path.join(config['dump_dir'], '%6d.jpg')
-    fps = config['fps']
-    first_frame = 0
+    width = config['img_dimensions'][1]
+    height = config['img_dimensions'][0]
+    video_path = os.path.join(OUT_VIDEOS_PATH, create_video_name(config))
+    out = cv.VideoWriter(video_path, cv.VideoWriter_fourcc(*'mp4v'), config['fps'], (width, height))
+    for img in sorted(glob.glob(config['dump_dir']+'/*.jpg')):
+        frame = cv.imread(img)
+        #frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+        out.write(frame)
+    out.release()
 
-    number_of_frames_to_process = len(valid_frames(config['dump_dir']))
-    if config['create_ouroboros']:
-        number_of_frames_to_process = config['ouroboros_length']
-
-    out_file_name = create_video_name(config)
-
-    ffmpeg = 'ffmpeg'
-    if shutil.which(ffmpeg):  # if ffmpeg is in system path
-        input_options = ['-r', str(fps), '-i', img_pattern]
-        trim_video_command = ['-start_number', str(first_frame), '-vframes', str(number_of_frames_to_process)]
-        encoding_options = ['-c:v', 'libx264', '-crf', '25', '-pix_fmt', 'yuv420p']
-        pad_options = ['-vf', 'pad=ceil(iw/2)*2:ceil(ih/2)*2']  # libx264 won't work for odd dimensions
-        less_verbose = ['-loglevel', 'warning']
-        out_video_path = os.path.join(OUT_VIDEOS_PATH, out_file_name)
-        subprocess.call([ffmpeg, *input_options, *trim_video_command, *encoding_options, *pad_options, *less_verbose, out_video_path])
-        print(f'Saved video to {out_video_path}.')
-        return out_video_path
-    else:
-        raise Exception(f'{ffmpeg} not found in the system path, aborting.')
 
 
 def extract_frames(video_path, dump_dir):

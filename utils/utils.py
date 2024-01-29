@@ -120,7 +120,8 @@ def save_and_maybe_display_image(config, dump_img, name_modifier=None):
 
 
 def linear_blend(img1, img2, alpha=0.5):
-    return img1 + alpha * (img2 - img1)
+    #return img1 + alpha * (img2 - img1)
+    return (1-alpha) * img1 + alpha * img2
 
 
 #
